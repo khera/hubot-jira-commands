@@ -1,23 +1,20 @@
 {
-  "name": "hubot-jira",
-  "description": "An updated version of the hubot jira script",
-  "version": "1.0.2",
+  "name": "hubot-jira-commands",
+  "description": "Show details of Jira issues mentioned and allow to create new issues",
+  "version": "1.1.0",
   "authors": [
     "David Newell <beta@alumni.rice.edu>",
-    "stuartf"
+    "stuartf",
+    "Vick Khera <vivek@mailermailer.com>"
   ],
   "license": "MIT",
   "keywords": [
     "hubot",
-    "hubot-scripts",
     "jira"
   ],
   "repository": {
     "type": "git",
-    "url": "git@github.com:rustedgrail/hubot-jira.git"
-  },
-  "bugs": {
-    "url": "https://github.com/rustedgrail/hubot-jira/issues"
+    "url": "git@github.com:khera/hubot-jira-commands.git"
   },
   "dependencies": {
     "coffee-script": "~1.6"

@@ -16,6 +16,7 @@
 # Commands:
 #   hubot move jira <issue ID> to <status> - Changes the status of <issue ID> to <status>
 #   hubot jira status - List the available statuses
+#   hubot jira create <projectKey> <taskType> subject line: description
 #
 # Author:
 #   rustedgrail
@@ -42,8 +43,8 @@ module.exports = (robot) ->
     .get() (err, res, body) ->
       json = JSON.parse(body)
       jiraPrefixes = ( entry.key for entry in json )
-      reducedPrefixes = jiraPrefixes.reduce (x,y) -> x + "-|" + y
-      jiraPattern = "/\\b(" + reducedPrefixes + "-)(\\d+)\\b/g"
+      reducedPrefixes = jiraPrefixes.reduce (x,y) -> x + "|" + y
+      jiraPattern = "/\\b(" + reducedPrefixes + ")-(\\d+)\\b/g"
       ic = process.env.HUBOT_JIRA_IGNORECASE
       if ic == undefined || ic == "true"
         jiraPattern += "i"
@@ -67,6 +68,22 @@ module.exports = (robot) ->
                 transition: status[0]
               })) (err, res, body) ->
                 msg.send if res.statusCode == 204 then "Success!" else body
+
+      robot.hear /jira create ([A-Z]+) ([A-Z][a-z]+) ([^:]+): (.+)/, (msg) ->
+        projectkey = msg.match[1]
+        if !projectkey.match(new RegExp('^('+reducedPrefixes+')$'))
+          msg.reply "Unknown project key "+projectkey+" -- known keys are "+reducedPrefixes
+          return
+        jsonstring = JSON.stringify({
+            fields: { project: { key: projectkey }, summary: msg.match[3], description: msg.match[4], issuetype: { name: msg.match[2] }, reporter: {name: msg.message.user.name} }
+          })
+        robot.http(jiraUrl + "/rest/api/2/issue")
+          .header("Content-Type", "application/json").auth(auth).post(jsonstring) (err, res, body) ->
+            json = JSON.parse(body)
+            msg.send if res.statusCode == 201 then "Created " + jiraUrl + "/browse/" + json.key else body
+
+      robot.hear /jira projects/, (msg) ->
+        msg.reply reducedPrefixes
 
       robot.hear /jira status/, (msg) ->
         robot.http(jiraUrl + "/rest/api/2/status")
