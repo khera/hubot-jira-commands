@@ -16,6 +16,7 @@
 # Commands:
 #   hubot move jira <issue ID> to <status> - Changes the status of <issue ID> to <status>
 #   hubot jira status - List the available statuses
+#   hubot jira projects - list known project keys (at time hubot started)
 #   hubot jira create <projectKey> <taskType> subject line: description
 #
 # Author:
